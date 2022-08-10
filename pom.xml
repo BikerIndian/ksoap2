@@ -42,7 +42,7 @@
   </prerequisites>
 
   <modules>
-    <module>android</module>
+    <module>asoap</module>
   </modules>
 
   <scm>
