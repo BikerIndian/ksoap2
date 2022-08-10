@@ -1,4 +1,4 @@
-package net.svishch.ksoap2.debug;
+package net.svishch.asoap.debug;
 
 import org.ksoap2.serialization.AttributeInfo;
 import org.ksoap2.serialization.PropertyInfo;

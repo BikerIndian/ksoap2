@@ -2,8 +2,8 @@ package oorsprong;
 
 import oorsprong.entity.RecuestListOfContinentsByName;
 import oorsprong.entity.Response;
-import net.svishch.ksoap2.client.SoapClient;
-import net.svishch.ksoap2.client.UrlSettings;
+import net.svishch.asoap.client.SoapClient;
+import net.svishch.asoap.client.UrlSettings;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;

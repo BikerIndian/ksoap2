@@ -1,4 +1,4 @@
-package net.svishch.ksoap2.util;
+package net.svishch.asoap.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

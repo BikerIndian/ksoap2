@@ -1,6 +1,6 @@
 package oorsprong.entity;
 
-import net.svishch.ksoap2.RecuestSOAP;
+import net.svishch.asoap.RecuestSOAP;
 import org.ksoap2.serialization.SoapObject;
 
 public class RecuestListOfContinentsByName {

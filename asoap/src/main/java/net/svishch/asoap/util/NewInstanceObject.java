@@ -1,7 +1,6 @@
-package net.svishch.ksoap2.util;
+package net.svishch.asoap.util;
 
-import net.svishch.ksoap2.annotations.SerializedNameUtil;
-import net.svishch.ksoap2.tosoap.ToSoap;
+import net.svishch.asoap.annotations.SerializedNameUtil;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;

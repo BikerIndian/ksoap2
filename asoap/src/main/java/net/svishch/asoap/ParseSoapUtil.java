@@ -1,6 +1,6 @@
-package net.svishch.ksoap2;
+package net.svishch.asoap;
 
-import net.svishch.ksoap2.util.DateUtil;
+import net.svishch.asoap.util.DateUtil;
 
 import java.text.ParseException;
 import java.util.Date;

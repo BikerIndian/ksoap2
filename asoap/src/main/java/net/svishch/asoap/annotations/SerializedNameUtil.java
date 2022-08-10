@@ -1,4 +1,4 @@
-package net.svishch.ksoap2.annotations;
+package net.svishch.asoap.annotations;
 
 import java.lang.reflect.Field;
 

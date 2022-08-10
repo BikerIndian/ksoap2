@@ -1,7 +1,7 @@
-package net.svishch.ksoap2.client.okhttp;
+package net.svishch.asoap.client.okhttp;
 
 
-import net.svishch.ksoap2.client.UrlSettings;
+import net.svishch.asoap.client.UrlSettings;
 import okhttp3.*;
 import okhttp3.internal.http2.Http2Reader;
 import org.jetbrains.annotations.NotNull;

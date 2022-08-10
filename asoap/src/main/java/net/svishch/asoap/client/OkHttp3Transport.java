@@ -1,17 +1,12 @@
-package net.svishch.ksoap2.client;
+package net.svishch.asoap.client;
 
-import net.svishch.ksoap2.HttpResponseException;
+import net.svishch.asoap.HttpResponseException;
 import okhttp3.*;
 import org.ksoap2.SoapEnvelope;
-import org.kxml2.io.KXmlParser;
-import org.kxml2.io.KXmlSerializer;
-import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlSerializer;
 
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Proxy;

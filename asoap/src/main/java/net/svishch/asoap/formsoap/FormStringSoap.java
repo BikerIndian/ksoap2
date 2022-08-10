@@ -1,4 +1,4 @@
-package net.svishch.ksoap2.formsoap;
+package net.svishch.asoap.formsoap;
 
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;

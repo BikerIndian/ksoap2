@@ -1,7 +1,7 @@
-package net.svishch.ksoap2;
+package net.svishch.asoap;
 
-import net.svishch.ksoap2.formsoap.FormSoap;
-import net.svishch.ksoap2.tosoap.ToSoap;
+import net.svishch.asoap.formsoap.FormSoap;
+import net.svishch.asoap.tosoap.ToSoap;
 import org.ksoap2.serialization.SoapObject;
 
 public class Soap {

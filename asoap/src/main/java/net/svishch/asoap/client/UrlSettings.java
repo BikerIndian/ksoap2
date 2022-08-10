@@ -1,4 +1,4 @@
-package net.svishch.ksoap2.client;
+package net.svishch.asoap.client;
 
 public class UrlSettings {
     String url = "";

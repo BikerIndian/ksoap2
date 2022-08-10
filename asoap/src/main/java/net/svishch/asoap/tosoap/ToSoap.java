@@ -1,13 +1,11 @@
-package net.svishch.ksoap2.tosoap;
+package net.svishch.asoap.tosoap;
 
-import net.svishch.ksoap2.annotations.*;
-import net.svishch.ksoap2.client.OkHttp3Transport;
-import net.svishch.ksoap2.util.NewInstanceObject;
+import net.svishch.asoap.annotations.*;
+import net.svishch.asoap.util.NewInstanceObject;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import java.lang.reflect.Field;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ToSoap {

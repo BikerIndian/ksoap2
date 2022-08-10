@@ -1,9 +1,9 @@
-package net.svishch.ksoap2.formsoap;
+package net.svishch.asoap.formsoap;
 
 
-import net.svishch.ksoap2.ParseSoapUtil;
-import net.svishch.ksoap2.debug.SoapObjectDebug;
-import net.svishch.ksoap2.util.NewInstanceObject;
+import net.svishch.asoap.ParseSoapUtil;
+import net.svishch.asoap.debug.SoapObjectDebug;
+import net.svishch.asoap.util.NewInstanceObject;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
 

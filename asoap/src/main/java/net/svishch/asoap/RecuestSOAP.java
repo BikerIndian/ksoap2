@@ -1,4 +1,4 @@
-package net.svishch.ksoap2;
+package net.svishch.asoap;
 
 import org.ksoap2.serialization.SoapObject;
 
