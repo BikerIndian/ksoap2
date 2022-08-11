@@ -9,7 +9,7 @@ public class SerializedNameUtil {
         SerializedName annotation = field.getAnnotation(SerializedName.class);
         String name = "";
 
-        if (annotation == null && annotation.value() == null) {
+        if (annotation == null || annotation.value() == null) {
            return name;
         }
 
