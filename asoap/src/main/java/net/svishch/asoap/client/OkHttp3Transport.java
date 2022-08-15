@@ -1,7 +1,10 @@
 package net.svishch.asoap.client;
 
 import net.svishch.asoap.HttpResponseException;
+import net.svishch.asoap.client.okhttp.HttpClient;
 import okhttp3.*;
+import okhttp3.internal.http2.Http2Reader;
+import org.jetbrains.annotations.NotNull;
 import org.ksoap2.SoapEnvelope;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -10,6 +13,7 @@ import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Proxy;
+import java.nio.Buffer;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -30,19 +34,22 @@ public class OkHttp3Transport {
 
     private OkHttp3Transport(Builder builder)
     {
+
         this.debug = builder.debug;
 
-        if (builder.debug) {
-            setDebug();
-            this.logger = Logger.getLogger(OkHttp3Transport.class.getName());
-            this.logger.setLevel(builder.debug ? Level.FINEST : Level.INFO);
-        }
 
         okhttp3.OkHttpClient.Builder clientBuilder;
         if (null != builder.client) {
             clientBuilder = builder.client.newBuilder();
         } else {
             clientBuilder = new okhttp3.OkHttpClient.Builder();
+        }
+
+        if (builder.debug) {
+            clientBuilder.addInterceptor(new LoggingInterceptor());
+            setDebug();
+            this.logger = Logger.getLogger(this.getClass().getName());
+            this.logger.setLevel(builder.debug ? Level.FINEST : Level.INFO);
         }
 
         clientBuilder.connectTimeout((long)builder.timeout, TimeUnit.MILLISECONDS).readTimeout((long)builder.timeout, TimeUnit.MILLISECONDS);

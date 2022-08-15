@@ -72,11 +72,6 @@ public class ToSoap {
             valueName =  new SerializedNameUtil().getAnnotationValue(field);
         }
         Object value = new NewInstanceObject().getValue(obj,field);
-        if (value != null) {
-
-            System.out.println(String.format(" %s = %s",valueName, value));
-        }
-
         soapObject.addProperty(valueName,value);
     }
 

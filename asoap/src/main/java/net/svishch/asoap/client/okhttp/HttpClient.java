@@ -61,6 +61,7 @@ public class HttpClient {
         return request;
     }
 
+    /*
     public void getSoap(String url, String soapAction, CallbackString callback) throws IOException {
 
         Request request  = new Request.Builder()
@@ -76,6 +77,8 @@ public class HttpClient {
         callback.result(response.body().string());
 
     }
+
+     */
 
     private class  LoggingInterceptor implements Interceptor {
         @NotNull

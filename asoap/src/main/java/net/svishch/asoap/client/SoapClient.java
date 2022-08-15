@@ -3,8 +3,9 @@ package net.svishch.asoap.client;
 
 import net.svishch.asoap.CallbackSOAP;
 import net.svishch.asoap.RecuestSOAP;
+import net.svishch.asoap.Soap;
+import net.svishch.asoap.annotations.SoapActionUtil;
 import net.svishch.asoap.client.okhttp.HttpClient;
-import net.svishch.asoap.util.NewInstanceObject;
 import okhttp3.Credentials;
 import okhttp3.Headers;
 import org.ksoap2.SoapEnvelope;
@@ -13,6 +14,7 @@ import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 
 public class SoapClient {
@@ -24,8 +26,15 @@ public class SoapClient {
     private SoapSerializationEnvelope envelope   = new SoapSerializationEnvelope(SoapEnvelope.VER12);
     private OkHttp3Transport clientTransport;
     HttpClient httpClient;
+    private Logger logger;
 
     public SoapClient(UrlSettings urlSettings) {
+        this.logger = Logger.getLogger(this.getClass().getName());
+
+        if (urlSettings == null) {
+            throw new NullPointerException("Error: SoapClient(null)");
+        }
+
         this.url = urlSettings.getUrl();
         this.username = urlSettings.getUser();
         this.password = urlSettings.getPassword();
@@ -65,16 +74,13 @@ public class SoapClient {
 
     public <T> T get(Object recuest , Class<T> response ) throws IOException, XmlPullParserException {
 
-        /*
-        RecuestSOAP recuestSOAP = null;
-        envelope.setOutputSoapObject(recuestSOAP.getSoapObject());
-        clientTransport.call(recuestSOAP.getSoapAction(), envelope);
+        Soap soap = new Soap();
+        String soapAction = new SoapActionUtil().getAnnotationValue(recuest);
+        envelope.setOutputSoapObject(soap.toSoapObject(recuest));
+        clientTransport.call(soapAction, envelope);
         SoapObject result = (SoapObject) envelope.getResponse();
-          return new FormSoap().formSoap(result,response);
-*/
-        T object = new NewInstanceObject().create(response);
+        return soap.formSoap(result,response);
 
-        return (T) object;
     }
 
     private String getPass()  {
@@ -82,4 +88,7 @@ public class SoapClient {
         return credentials;
     }
 
+    private void sendLogger(String mess) {
+        this.logger.info(mess);
+    }
 }
