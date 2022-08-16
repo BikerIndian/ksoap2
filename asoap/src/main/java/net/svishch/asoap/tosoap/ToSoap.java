@@ -5,6 +5,7 @@ import net.svishch.asoap.util.NewInstanceObject;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
+
 import java.lang.reflect.Field;
 import java.util.logging.Logger;
 
@@ -13,6 +14,7 @@ public class ToSoap {
     private final SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
     private final NewInstanceObject newInstanceObject;
     private Logger logger;
+
     public ToSoap() {
         this.newInstanceObject = new NewInstanceObject();
         initLog();
@@ -47,14 +49,15 @@ public class ToSoap {
         try {
             for (Field field : fields) {
                 field.setAccessible(true);
-                if (this.newInstanceObject.isAnnotation(field, SoapAction.class)) {
-                } else
-                if (this.newInstanceObject.isAnnotation(field, NameSpace.class) && field.getType().equals(String.class)) {
+                if (this.newInstanceObject.isAnnotation(field, SoapAction.class)
+                        || this.newInstanceObject.isAnnotation(field, SoapVersion.class)
+                ) {
+                } else if (this.newInstanceObject.isAnnotation(field, NameSpace.class) && field.getType().equals(String.class)) {
                     soapObject.setNamespace((String) field.get(obj));
                 } else if (this.newInstanceObject.isAnnotation(field, NameMethod.class) && field.getType().equals(String.class)) {
                     soapObject.setName((String) field.get(obj));
                 } else {
-                    addProperty(obj, field,soapObject);
+                    addProperty(obj, field, soapObject);
                 }
             }
 
@@ -69,10 +72,10 @@ public class ToSoap {
 
         String valueName = firstUpperCase(field.getName());
         if (this.newInstanceObject.isAnnotation(field, SerializedName.class)) {
-            valueName =  new SerializedNameUtil().getAnnotationValue(field);
+            valueName = new AnnotationsUtil().getAnnotationValue(field);
         }
-        Object value = new NewInstanceObject().getValue(obj,field);
-        soapObject.addProperty(valueName,value);
+        Object value = new NewInstanceObject().getValue(obj, field);
+        soapObject.addProperty(valueName, value);
     }
 
     // First letter to uppercase

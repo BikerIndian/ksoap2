@@ -1,10 +1,7 @@
 package net.svishch.asoap.client;
 
 import net.svishch.asoap.HttpResponseException;
-import net.svishch.asoap.client.okhttp.HttpClient;
 import okhttp3.*;
-import okhttp3.internal.http2.Http2Reader;
-import org.jetbrains.annotations.NotNull;
 import org.ksoap2.SoapEnvelope;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -13,7 +10,6 @@ import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Proxy;
-import java.nio.Buffer;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -99,30 +95,40 @@ public class OkHttp3Transport {
     }
 
     public Headers call(String soapAction, SoapEnvelope envelope, Headers headers) throws IOException, XmlPullParserException {
+
         if (soapAction == null) {
             soapAction = "\"\"";
         }
 
-        sendLogger("SoapAction: " + soapAction);
+        String contentType = "text/xml;charset=utf-8";
 
-        MediaType contentType;
         if (envelope.version == 120) {
-            contentType = MediaType.parse("application/soap+xml;charset=utf-8");
-        } else {
-            contentType = MediaType.parse("text/xml;charset=utf-8");
+            contentType = "application/soap+xml;charset=utf-8";
         }
 
-        sendLogger("ContentType: " + contentType);
+        MediaType mediaType = MediaType.parse(contentType);
+
         byte[] requestData = envelope.getRequestData();
         sendLoggerFinest("Request Payload: " + new String(requestData, "UTF-8"));
 
 
-        RequestBody body = RequestBody.create(contentType, requestData);
-        okhttp3.Request.Builder builder = (new okhttp3.Request.Builder()).url(this.url).cacheControl(CacheControl.FORCE_NETWORK).post(body);
+        RequestBody body = RequestBody.create(requestData,mediaType);
+        okhttp3.Request.Builder builder = (
+                new okhttp3.Request.Builder())
+                .url(this.url)
+                .cacheControl(CacheControl.FORCE_NETWORK)
+                .post(body);
+
+
         builder.addHeader("User-Agent", this.userAgent);
+        builder.addHeader("ContentType",mediaType.toString());
+
         if (envelope.version != 120) {
             builder.addHeader("SOAPAction", soapAction);
         }
+
+        sendLogger("SoapAction: " + soapAction);
+        sendLogger("ContentType: " + contentType);
 
         int i;
         if (null != this.headers) {

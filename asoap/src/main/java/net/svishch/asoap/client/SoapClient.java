@@ -1,11 +1,9 @@
 package net.svishch.asoap.client;
 
 
-import net.svishch.asoap.CallbackSOAP;
-import net.svishch.asoap.RecuestSOAP;
+import net.svishch.asoap.HttpResponseException;
 import net.svishch.asoap.Soap;
-import net.svishch.asoap.annotations.SoapActionUtil;
-import net.svishch.asoap.client.okhttp.HttpClient;
+import net.svishch.asoap.annotations.AnnotationsUtil;
 import okhttp3.Credentials;
 import okhttp3.Headers;
 import org.ksoap2.SoapEnvelope;
@@ -25,7 +23,6 @@ public class SoapClient {
     private UrlSettings urlSettings;
     private SoapSerializationEnvelope envelope   = new SoapSerializationEnvelope(SoapEnvelope.VER12);
     private OkHttp3Transport clientTransport;
-    HttpClient httpClient;
     private Logger logger;
 
     public SoapClient(UrlSettings urlSettings) {
@@ -40,7 +37,6 @@ public class SoapClient {
         this.password = urlSettings.getPassword();
         this.debug = urlSettings.isDebug();
         this.urlSettings = urlSettings;
-        this.httpClient = new HttpClient(urlSettings);
         init();
     }
 
@@ -50,15 +46,16 @@ public class SoapClient {
         envelope.setAddAdornments(false);
 
         Headers headers = Headers.of("Authorization", getPass());
-
         //httpClient.getSoap(url,soapAction,callbackString);
-        clientTransport = new OkHttp3Transport.Builder(this.url)
+        clientTransport = new OkHttp3Transport
+                .Builder(this.url)
                 .headers(headers)
                 //.client(httpClient.getClient(this.url))
                 .debug(this.debug)
                 .build();
     }
 
+    /*
     public void get(CallbackSOAP callback, RecuestSOAP recuestSOAP ) throws IOException, XmlPullParserException {
         callback.result(get(recuestSOAP));
     }
@@ -71,11 +68,16 @@ public class SoapClient {
 
         return result;
     }
+    */
 
     public <T> T get(Object recuest , Class<T> response ) throws IOException, XmlPullParserException {
 
         Soap soap = new Soap();
-        String soapAction = new SoapActionUtil().getAnnotationValue(recuest);
+        String soapAction = new AnnotationsUtil().getSoapActionValue(recuest);
+        int soapVersion = new AnnotationsUtil().getSoapVersion(recuest);
+        if (soapVersion > 0) {
+            envelope.version = soapVersion;
+        }
         envelope.setOutputSoapObject(soap.toSoapObject(recuest));
         clientTransport.call(soapAction, envelope);
         SoapObject result = (SoapObject) envelope.getResponse();

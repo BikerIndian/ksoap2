@@ -1,6 +1,6 @@
 package net.svishch.asoap.util;
 
-import net.svishch.asoap.annotations.SerializedNameUtil;
+import net.svishch.asoap.annotations.AnnotationsUtil;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -36,7 +36,7 @@ public class NewInstanceObject {
     }
 
     public boolean isAnnotationValue(Field field, String value) {
-        String annotationValue = new SerializedNameUtil().getAnnotationValue(field);
+        String annotationValue = new AnnotationsUtil().getAnnotationValue(field);
 
         return value.equals(annotationValue)
                 || value.equalsIgnoreCase(field.getName());
