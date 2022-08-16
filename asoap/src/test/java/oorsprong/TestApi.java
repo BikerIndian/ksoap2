@@ -1,9 +1,9 @@
 package oorsprong;
 
+import net.svishch.asoap.client.ClientSettings;
 import oorsprong.entity.RecuestListOfContinentsByName;
 import oorsprong.entity.Response;
 import net.svishch.asoap.client.SoapClient;
-import net.svishch.asoap.client.UrlSettings;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
@@ -18,17 +18,20 @@ public class TestApi {
 
         Logger LOG = Logger.getLogger(TestApi.class.getName());
 
-        UrlSettings urlSettings = new UrlSettings()
+
+        ClientSettings urlSettings = new ClientSettings()
+
                 .setUrl(url)
                 .setUser(user)
                 .setPassword(password)
                 .setDebug(true);
 
+       // UrlSettings
         getCountryInfo(urlSettings);
 
     }
 
-    private static void getCountryInfo(UrlSettings urlSettings) {
+    private static void getCountryInfo(ClientSettings urlSettings) {
 
         Response response = null;
 

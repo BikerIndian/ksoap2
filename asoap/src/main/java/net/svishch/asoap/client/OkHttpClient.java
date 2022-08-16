@@ -5,11 +5,8 @@ import okhttp3.*;
 import org.ksoap2.SoapEnvelope;
 import org.xmlpull.v1.XmlPullParserException;
 
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.Proxy;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -17,66 +14,68 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class OkHttp3Transport {
+public class OkHttpClient {
     private static final String DEFAULT_CHARSET = "UTF-8";
     public static final int DEFAULT_TIMEOUT = 20000;
     protected static final String USER_AGENT_PREFIX = "ksoap2-okhttp/3.6.3";
+    private ClientSettings clientSettings;
     private final String userAgent;
-    private final OkHttpClient client;
+    private final okhttp3.OkHttpClient client;
     private final HttpUrl url;
     private final Headers headers;
     private Logger logger;
     private boolean debug = false;
 
-    private OkHttp3Transport(Builder builder)
+    protected OkHttpClient(ClientSettings clientSettings)
     {
 
-        this.debug = builder.debug;
+        this.clientSettings = clientSettings;
+        this.debug = clientSettings.debug;
 
 
         okhttp3.OkHttpClient.Builder clientBuilder;
-        if (null != builder.client) {
-            clientBuilder = builder.client.newBuilder();
+        if (null != clientSettings.client) {
+            clientBuilder = clientSettings.client.newBuilder();
         } else {
             clientBuilder = new okhttp3.OkHttpClient.Builder();
         }
 
-        if (builder.debug) {
+        if (clientSettings.debug) {
             clientBuilder.addInterceptor(new LoggingInterceptor());
             setDebug();
             this.logger = Logger.getLogger(this.getClass().getName());
-            this.logger.setLevel(builder.debug ? Level.FINEST : Level.INFO);
+            this.logger.setLevel(clientSettings.debug ? Level.FINEST : Level.INFO);
         }
 
-        clientBuilder.connectTimeout((long)builder.timeout, TimeUnit.MILLISECONDS).readTimeout((long)builder.timeout, TimeUnit.MILLISECONDS);
-        if (null != builder.proxy) {
-            clientBuilder.proxy(builder.proxy);
-            if (null != builder.proxyAuthenticator) {
-                clientBuilder.proxyAuthenticator(builder.proxyAuthenticator);
+        clientBuilder.connectTimeout((long) clientSettings.timeout, TimeUnit.MILLISECONDS).readTimeout((long) clientSettings.timeout, TimeUnit.MILLISECONDS);
+        if (null != clientSettings.proxy) {
+            clientBuilder.proxy(clientSettings.proxy);
+            if (null != clientSettings.proxyAuthenticator) {
+                clientBuilder.proxyAuthenticator(clientSettings.proxyAuthenticator);
             }
         }
 
-        if (null != builder.sslSocketFactory) {
-            if (null == builder.trustManager) {
+        if (null != clientSettings.sslSocketFactory) {
+            if (null == clientSettings.trustManager) {
                 throw new NullPointerException("TrustManager = null");
             }
 
-            clientBuilder.sslSocketFactory(builder.sslSocketFactory, builder.trustManager);
+            clientBuilder.sslSocketFactory(clientSettings.sslSocketFactory, clientSettings.trustManager);
         }
 
-        if (null != builder.authenticator) {
-            clientBuilder.authenticator(builder.authenticator);
+        if (null != clientSettings.authenticator) {
+            clientBuilder.authenticator(clientSettings.authenticator);
         }
 
         this.client = clientBuilder.build();
-        this.userAgent = this.buildUserAgent(builder);
-        this.url = builder.url;
-        this.headers = builder.headers;
+        this.userAgent = this.buildUserAgent(clientSettings);
+        this.url = clientSettings.url;
+        this.headers = clientSettings.headers;
     }
 
-    private String buildUserAgent(Builder builder) {
-        if (null != builder.userAgent) {
-            return builder.userAgent;
+    private String buildUserAgent(ClientSettings clientSettings) {
+        if (null != clientSettings.userAgent) {
+            return clientSettings.userAgent;
         } else {
             String agent = System.getProperty("http.agent");
             if (null != agent) {
@@ -119,6 +118,12 @@ public class OkHttp3Transport {
                 .cacheControl(CacheControl.FORCE_NETWORK)
                 .post(body);
 
+
+        /* BASIC */
+        if (ClientSettings.AUTH_BASIC == this.clientSettings.authType) {
+            String authorization = Credentials.basic(this.clientSettings.user, this.clientSettings.password);
+            builder.addHeader("Authorization",authorization);
+        }
 
         builder.addHeader("User-Agent", this.userAgent);
         builder.addHeader("ContentType",mediaType.toString());
@@ -189,77 +194,6 @@ public class OkHttp3Transport {
     }
 
 
-    public static class Builder {
-        private final HttpUrl url;
-        private Proxy proxy = null;
-        private int timeout = 20000;
-        private String userAgent = null;
-        private Headers headers = null;
-        private OkHttpClient client = null;
-        private SSLSocketFactory sslSocketFactory = null;
-        private X509TrustManager trustManager = null;
-        private Authenticator authenticator = null;
-        private Authenticator proxyAuthenticator = null;
-        private boolean debug = false;
-
-        public Builder(HttpUrl url) {
-            this.url = url;
-        }
-
-        public Builder(String url) {
-            this.url = HttpUrl.parse(url);
-        }
-
-        public Builder client(OkHttpClient client) {
-            this.client = client;
-            return this;
-        }
-
-        public Builder proxy(Proxy proxy) {
-            this.proxy = proxy;
-            return this;
-        }
-
-        public Builder timeout(int timeout) {
-            this.timeout = timeout;
-            return this;
-        }
-
-        public Builder userAgent(String userAgent) {
-            this.userAgent = userAgent;
-            return this;
-        }
-
-        public Builder headers(Headers headers) {
-            this.headers = headers;
-            return this;
-        }
-
-        public Builder sslSocketFactory(SSLSocketFactory sslSocketFactory, X509TrustManager trustManager) {
-            this.sslSocketFactory = sslSocketFactory;
-            this.trustManager = trustManager;
-            return this;
-        }
-
-        public Builder authenticator(Authenticator authenticator) {
-            this.authenticator = authenticator;
-            return this;
-        }
-
-        public Builder proxyAuthenticator(Authenticator authenticator) {
-            this.proxyAuthenticator = authenticator;
-            return this;
-        }
-
-        public Builder debug(boolean debug) {
-            this.debug = debug;
-            return this;
-        }
-
-        public OkHttp3Transport build() {
-            return new OkHttp3Transport(this);
-        }
-    }
 
     private void sendLogger(String mess) {
         if (this.debug) {
@@ -279,9 +213,9 @@ public class OkHttp3Transport {
         InputStream stream = null;
 
         try {
-            stream = OkHttp3Transport.class.getResourceAsStream("logging.properties");
+            stream = OkHttpClient.class.getResourceAsStream("logging.properties");
             if (null == stream) {
-                stream = OkHttp3Transport.class.getClassLoader().getResourceAsStream("logging.properties");
+                stream = OkHttpClient.class.getClassLoader().getResourceAsStream("logging.properties");
             }
 
             if (null != stream) {

@@ -1,11 +1,8 @@
 package net.svishch.asoap.client;
 
 
-import net.svishch.asoap.HttpResponseException;
 import net.svishch.asoap.Soap;
 import net.svishch.asoap.annotations.AnnotationsUtil;
-import okhttp3.Credentials;
-import okhttp3.Headers;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
@@ -16,26 +13,20 @@ import java.util.logging.Logger;
 
 
 public class SoapClient {
-    private String url = "";
-    private String username = "";
-    private String password = "";
-    private boolean debug;
-    private UrlSettings urlSettings;
+
+
+    private ClientSettings urlSettings;
     private SoapSerializationEnvelope envelope   = new SoapSerializationEnvelope(SoapEnvelope.VER12);
-    private OkHttp3Transport clientTransport;
+    private OkHttpClient clientTransport;
     private Logger logger;
 
-    public SoapClient(UrlSettings urlSettings) {
+    public SoapClient(ClientSettings urlSettings) {
         this.logger = Logger.getLogger(this.getClass().getName());
 
         if (urlSettings == null) {
             throw new NullPointerException("Error: SoapClient(null)");
         }
 
-        this.url = urlSettings.getUrl();
-        this.username = urlSettings.getUser();
-        this.password = urlSettings.getPassword();
-        this.debug = urlSettings.isDebug();
         this.urlSettings = urlSettings;
         init();
     }
@@ -45,14 +36,10 @@ public class SoapClient {
         envelope.implicitTypes = true;
         envelope.setAddAdornments(false);
 
-        Headers headers = Headers.of("Authorization", getPass());
+        //Headers headers = Headers.of("Authorization", getPass());
         //httpClient.getSoap(url,soapAction,callbackString);
-        clientTransport = new OkHttp3Transport
-                .Builder(this.url)
-                .headers(headers)
-                //.client(httpClient.getClient(this.url))
-                .debug(this.debug)
-                .build();
+        clientTransport = new OkHttpClient(urlSettings);
+
     }
 
     /*
@@ -85,10 +72,7 @@ public class SoapClient {
 
     }
 
-    private String getPass()  {
-        String credentials = Credentials.basic(this.username, password);
-        return credentials;
-    }
+
 
     private void sendLogger(String mess) {
         this.logger.info(mess);
