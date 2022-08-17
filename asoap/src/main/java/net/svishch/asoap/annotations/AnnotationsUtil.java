@@ -52,8 +52,38 @@ public class AnnotationsUtil {
         return 0;
     }
 
-    public String getAnnotationValue(Field field) {
+    /* SerializedName */
+    public String getSerializedNameValue(Field field) {
         SerializedName annotation = field.getAnnotation(SerializedName.class);
+        String name = "";
+
+        if (annotation == null || annotation.value() == null) {
+            return name;
+        }
+
+        return annotation.value();
+    }
+
+    public boolean isSerializedName(Field field, String value) {
+        String annotationValue = new AnnotationsUtil().getSerializedNameValue(field);
+
+        return value.equals(annotationValue)
+                || value.equalsIgnoreCase(field.getName());
+
+    }
+
+    /* AttributeName */
+    public boolean isAttributeName(Field field, String value) {
+
+        String annotationValue = new AnnotationsUtil().getAttributeNameValue(field);
+
+        return value.equals(annotationValue)
+                || value.equalsIgnoreCase(field.getName());
+
+    }
+
+    public String getAttributeNameValue(Field field) {
+        AttributeName annotation = field.getAnnotation(AttributeName.class);
         String name = "";
 
         if (annotation == null || annotation.value() == null) {

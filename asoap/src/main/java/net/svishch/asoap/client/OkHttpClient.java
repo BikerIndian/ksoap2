@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 public class OkHttpClient {
     private static final String DEFAULT_CHARSET = "UTF-8";
     public static final int DEFAULT_TIMEOUT = 20000;
-    protected static final String USER_AGENT_PREFIX = "ksoap2-okhttp/3.6.3";
+    protected static final String HTTP_CLIENT_NAME = "asoap2-okhttp/3.6.4";
     private ClientSettings clientSettings;
     private final String userAgent;
     private final okhttp3.OkHttpClient client;
@@ -81,11 +81,11 @@ public class OkHttpClient {
             if (null != agent) {
                 Matcher m = Pattern.compile("(\\s\\(.*\\))").matcher(agent);
                 if (m.find() && m.groupCount() > 0 && m.group(1).length() > 0) {
-                    return "ksoap2-okhttp/3.6.3" + m.group(1);
+                    return HTTP_CLIENT_NAME + m.group(1);
                 }
             }
 
-            return "ksoap2-okhttp/3.6.3";
+            return HTTP_CLIENT_NAME;
         }
     }
 
@@ -108,6 +108,8 @@ public class OkHttpClient {
         MediaType mediaType = MediaType.parse(contentType);
 
         byte[] requestData = envelope.getRequestData();
+        int contentLength = requestData.length;
+
         sendLoggerFinest("Request Payload: " + new String(requestData, "UTF-8"));
 
 
@@ -125,8 +127,11 @@ public class OkHttpClient {
             builder.addHeader("Authorization",authorization);
         }
 
+
         builder.addHeader("User-Agent", this.userAgent);
         builder.addHeader("ContentType",mediaType.toString());
+        builder.addHeader("Content-Length", String.valueOf(contentLength));
+
 
         if (envelope.version != 120) {
             builder.addHeader("SOAPAction", soapAction);

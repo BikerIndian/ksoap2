@@ -35,27 +35,6 @@ public class NewInstanceObject {
         return object;
     }
 
-    public boolean isAnnotationValue(Field field, String value) {
-        String annotationValue = new AnnotationsUtil().getAnnotationValue(field);
-
-        return value.equals(annotationValue)
-                || value.equalsIgnoreCase(field.getName());
-
-    }
-
-    /*
-    public <T>  boolean isAnnotationValue(Field field, String valueName) {
-        List<String> annotationNames = new SerializedNameUtil().getAnnotationValue(field);
-        for (String fieldName : annotationNames) {
-            if (valueName.equals(fieldName)
-                    || valueName.equalsIgnoreCase(field.getName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-     */
-
     public <T extends Annotation> boolean isAnnotation(Field field, Class<T> classAnnotation) {
         Annotation[] annotations = field.getAnnotations();
         for (Annotation annotation : annotations) {

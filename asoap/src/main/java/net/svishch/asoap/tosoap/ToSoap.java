@@ -72,7 +72,7 @@ public class ToSoap {
 
         String valueName = firstUpperCase(field.getName());
         if (this.newInstanceObject.isAnnotation(field, SerializedName.class)) {
-            valueName = new AnnotationsUtil().getAnnotationValue(field);
+            valueName = new AnnotationsUtil().getSerializedNameValue(field);
         }
         Object value = new NewInstanceObject().getValue(obj, field);
         soapObject.addProperty(valueName, value);

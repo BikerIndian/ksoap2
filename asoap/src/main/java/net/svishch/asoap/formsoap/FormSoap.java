@@ -2,8 +2,10 @@ package net.svishch.asoap.formsoap;
 
 
 import net.svishch.asoap.ParseSoapUtil;
+import net.svishch.asoap.annotations.AnnotationsUtil;
 import net.svishch.asoap.debug.SoapObjectDebug;
 import net.svishch.asoap.util.NewInstanceObject;
+import org.ksoap2.serialization.AttributeInfo;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
 
@@ -32,6 +34,13 @@ public class FormSoap {
             return object;
         }
 
+        for (int i = 0; i < soap.getAttributeCount(); i++) {
+            AttributeInfo attribute = new AttributeInfo();
+            soap.getAttributeInfo(i,attribute);
+            setFieldAttribute(object, attribute, classOfT);
+        }
+
+
         for (int i = 0; i < soap.getPropertyCount(); i++) {
             PropertyInfo propertyInfo = soap.getPropertyInfo(i);
             Object value = propertyInfo.getValue();
@@ -43,6 +52,23 @@ public class FormSoap {
         }
 
         return object;
+    }
+
+    private <T> void setFieldAttribute(T object, AttributeInfo attribute, Class<T> classOfT) {
+
+        Field[] fields = classOfT.getDeclaredFields();
+        for (Field field : fields) {
+            field.setAccessible(true);
+
+            if (new AnnotationsUtil().isAttributeName(field, attribute.getName())) {
+                try {
+                    addFieldValueType(object, field, attribute.getValue());
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
+        }
     }
 
     public <T> T formSoap(String soap, Class<T> classOfT) {
@@ -62,13 +88,12 @@ public class FormSoap {
         for (Field field : fields) {
             field.setAccessible(true);
 
-            if (this.newInstanceObject.isAnnotationValue(field, nameSoap)) {
-                addFieldValueType(object, field, value);;
+            if (new AnnotationsUtil().isSerializedName(field, nameSoap)) {
+                addFieldValueType(object, field, value);
                 return;
             }
 
         }
-
         sendLog("Error: " + nameSoap);
     }
 

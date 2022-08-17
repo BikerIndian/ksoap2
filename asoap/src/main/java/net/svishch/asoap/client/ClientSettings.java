@@ -12,11 +12,11 @@ import java.net.Proxy;
 public class ClientSettings {
 
     public static final int AUTH_BASIC = 1;
-    public static final int AUTH_BEARER = 2;
-    public static final int AUTH_DIGEST = 3;
-    public static final int AUTH_HOBA = 4;
-    public static final int AUTH_MUTUAL = 5;
-    public static final int AUTH_AWS4_HMAC_SHA256 = 6;
+   // public static final int AUTH_BEARER = 2;
+   // public static final int AUTH_DIGEST = 3;
+   // public static final int AUTH_HOBA = 4;
+   // public static final int AUTH_MUTUAL = 5;
+   // public static final int AUTH_AWS4_HMAC_SHA256 = 6;
 
 
     protected HttpUrl url;
@@ -143,6 +143,16 @@ public class ClientSettings {
 
     public ClientSettings setAuthType(int authType) {
         this.authType = authType;
+        return this;
+    }
+
+    public ClientSettings setAuthTypeNo() {
+        this.authType = 0;
+        return this;
+    }
+
+    public ClientSettings setAuthTypeBasic() {
+        this.authType = AUTH_BASIC;
         return this;
     }
 
