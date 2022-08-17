@@ -8,6 +8,7 @@ import net.svishch.asoap.util.NewInstanceObject;
 import org.ksoap2.serialization.AttributeInfo;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
+import org.ksoap2.serialization.SoapPrimitive;
 
 import java.lang.reflect.*;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class FormSoap {
 
     public FormSoap() {
         this.logger = Logger.getLogger(FormSoap.class.getName());
-        this.logger.setLevel(Level.WARNING);
+        this.logger.setLevel(Level.INFO);
         this.newInstanceObject = new NewInstanceObject();
     }
 
@@ -36,10 +37,9 @@ public class FormSoap {
 
         for (int i = 0; i < soap.getAttributeCount(); i++) {
             AttributeInfo attribute = new AttributeInfo();
-            soap.getAttributeInfo(i,attribute);
+            soap.getAttributeInfo(i, attribute);
             setFieldAttribute(object, attribute, classOfT);
         }
-
 
         for (int i = 0; i < soap.getPropertyCount(); i++) {
             PropertyInfo propertyInfo = soap.getPropertyInfo(i);
@@ -52,6 +52,61 @@ public class FormSoap {
         }
 
         return object;
+    }
+
+    public <T> T formSoap(SoapPrimitive soapPrimitive, Class<T> classOfT) {
+        T object = this.newInstanceObject.create(classOfT);
+
+        if (soapPrimitive == null) {
+            return object;
+        }
+
+        for (int i = 0; i < soapPrimitive.getAttributeCount(); i++) {
+            AttributeInfo attribute = new AttributeInfo();
+            soapPrimitive.getAttributeInfo(i, attribute);
+            setFieldAttribute(object, attribute, classOfT);
+        }
+
+        setPrimitiveValue(object, soapPrimitive);
+
+        return object;
+    }
+
+    /* в object вставить значение из PrimitiveValue */
+    private <T> void setPrimitiveValue(T object, SoapPrimitive soapPrimitive) {
+        Field[] fields = object.getClass().getDeclaredFields();
+
+        for (Field field : fields) {
+            field.setAccessible(true);
+
+            if (new AnnotationsUtil().isPrimitiveValue(field)) {
+
+                try {
+                    addFieldValueType(object, field, soapPrimitive.getValue());
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
+
+        }
+
+        String mess = String.format("%n  Error: \t\tPrimitiveValue not found%n  Class: \t\t%s%n  Name: \t\t%s%n",
+                object.getClass().getName(),
+                soapPrimitive.getValue());
+
+        sendLog(mess);
+
+    }
+
+    public <T> T formSoap(String soap, Class<T> classOfT) {
+
+        SoapObject soapObject = new FormStringSoap().getSoapObject(soap);
+        System.out.println(soap);
+        new SoapObjectDebug().printSoapObject(soapObject);
+
+        return formSoap(soapObject, classOfT);
+
     }
 
     private <T> void setFieldAttribute(T object, AttributeInfo attribute, Class<T> classOfT) {
@@ -69,16 +124,12 @@ public class FormSoap {
                 return;
             }
         }
-    }
 
-    public <T> T formSoap(String soap, Class<T> classOfT) {
+        String mess = String.format("%n  Error: \t\tPrimitive attribute not found%n  Class: \t\t%s%n  Name: \t\t%s%n",
+                object.getClass().getName(),
+                attribute.getName());
 
-        SoapObject soapObject = new FormStringSoap().getSoapObject(soap);
-        System.out.println(soap);
-        new SoapObjectDebug().printSoapObject(soapObject);
-
-        return formSoap(soapObject,classOfT);
-
+        sendLog(mess);
     }
 
     private <T> void setFieldValue(Object object, String nameSoap, Object value, Class<T> classOfT) throws IllegalAccessException {
@@ -94,10 +145,12 @@ public class FormSoap {
             }
 
         }
-        sendLog("Error: " + nameSoap);
+        String mess = String.format("%n  Error: \t\tObject not found%n  Class: \t\t%s%n  Name: \t\t%s%n",
+                object.getClass().getName(),
+                nameSoap);
+
+        sendLog(mess);
     }
-
-
 
     private void addFieldValueType(Object object, Field field, Object value) throws IllegalAccessException {
         Class<?> fieldType = field.getType();
@@ -113,15 +166,26 @@ public class FormSoap {
             this.setList(object, field, value);
         } else if (value.getClass().getTypeName().equals(SoapObject.class.getTypeName())) {
             field.set(object, formSoap((SoapObject) value, field.getType()));
+        } else if (value.getClass().getTypeName().equals(SoapPrimitive.class.getTypeName())) {
+            field.set(object, formSoap((SoapPrimitive) value, field.getType()));
         } else {
-            System.err.println(field.getType() + " != " + value.getClass().getName());
+
+            String mess = String.format("%n  Error: \t\tType mismatch%n  Class: \t\t%s%n  Property: \t%s%n  Type: \t\t%s != %s %n",
+                    object.getClass().getName(),
+                    field.getName(),
+                    field.getType().getName(),
+                    value.getClass().getName());
+
+            sendLog(mess);
+
         }
     }
 
     private void setList(Object object, Field field, Object value) {
 
         Type type = field.getGenericType();
-        String genericType =  type.getTypeName().substring(type.getTypeName().indexOf('<')+1,type.getTypeName().indexOf('>'));
+        String genericType = type.getTypeName().substring(type.getTypeName().indexOf('<') + 1, type.getTypeName().indexOf('>'));
+
 
         List objFiled = null;
         try {
@@ -132,9 +196,13 @@ public class FormSoap {
             }
 
 
+            if (value instanceof SoapPrimitive) {
+                SoapPrimitive soapPrimitive = (SoapPrimitive) value;
+                objFiled.add(this.formSoap(soapPrimitive, Class.forName(genericType)));
+            }
+
             if (value instanceof SoapObject) {
                 SoapObject soapObject = (SoapObject) value;
-
                 objFiled.add(this.formSoap(soapObject, Class.forName(genericType)));
             }
         } catch (IllegalAccessException | ClassNotFoundException e) {
@@ -150,7 +218,7 @@ public class FormSoap {
         }
     }
 
-    private void sendLog(String mess){
-        this.logger.fine(mess);
+    private void sendLog(String mess) {
+        this.logger.info(mess);
     }
 }

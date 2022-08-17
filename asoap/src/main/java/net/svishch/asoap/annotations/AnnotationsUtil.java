@@ -92,4 +92,22 @@ public class AnnotationsUtil {
 
         return annotation.value();
     }
+
+    /* PrimitiveValue */
+    public boolean isPrimitiveValue(Field field) {
+        return this.newInstanceObject.isAnnotation(field, PrimitiveValue.class) ;
+    }
+  /*
+    public String getPrimitiveValue(Field field) {
+        PrimitiveValue annotation = field.getAnnotation(PrimitiveValue.class);
+        String name = "";
+
+        if (annotation == null || annotation.value() == null) {
+            return name;
+        }
+
+        return annotation.value();
+    }
+
+   */
 }

@@ -70,14 +70,11 @@ public class SoapObjectDebug {
         String strInfo = String.format(
                 "%s --------- SoapPrimitive {attribute=%d} --------------",prefix,soapPrimitive.getAttributeCount());
         println(strInfo);
+        println(String.format("%s VALUE: %s ",prefix,soapPrimitive.getValue().toString()));
 
-        if (soapPrimitive.getAttributeCount() > 1) {
-        }
         if (soapPrimitive.getAttributeCount() > 0) {
             printAttributeSoapPrimitive(soapPrimitive, prefix);
         }
-
-        // println("$prefix name = "+result.name)
 
     }
 
@@ -96,7 +93,7 @@ public class SoapObjectDebug {
 
     private void printAttributeSoapPrimitive(SoapPrimitive soapPrimitive,String prefix) {
 
-        for (int i = 0; i < soapPrimitive.getAttributeCount()-1 ; i++) {
+        for (int i = 0; i < soapPrimitive.getAttributeCount() ; i++) {
             AttributeInfo info = new AttributeInfo();
             soapPrimitive.getAttributeInfo(i,info);
             println(String.format("%s [%d - attributePrimitive] %s ",prefix,i,info));
