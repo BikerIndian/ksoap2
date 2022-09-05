@@ -6,7 +6,7 @@
 
     <groupId>net.svishch.java</groupId>
     <artifactId>asoap</artifactId>
-    <version>1.0</version>
+    <version>1.0.2</version>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>

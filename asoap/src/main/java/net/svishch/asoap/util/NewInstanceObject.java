@@ -1,7 +1,5 @@
 package net.svishch.asoap.util;
 
-import net.svishch.asoap.annotations.AnnotationsUtil;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -35,15 +33,6 @@ public class NewInstanceObject {
         return object;
     }
 
-    public <T extends Annotation> boolean isAnnotation(Field field, Class<T> classAnnotation) {
-        Annotation[] annotations = field.getAnnotations();
-        for (Annotation annotation : annotations) {
-            if (annotation.annotationType().getTypeName().equals(classAnnotation.getTypeName())) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     private void printFields(Field[] fields) {
         for (Field field : fields) {

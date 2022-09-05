@@ -1,8 +1,10 @@
 package net.svishch.asoap.client;
 
 
+import net.svishch.asoap.CallbackSOAP;
+import net.svishch.asoap.RecuestSOAP;
 import net.svishch.asoap.Soap;
-import net.svishch.asoap.annotations.AnnotationsUtil;
+import net.svishch.asoap.annotations.AnnotationsSOAP;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
@@ -42,7 +44,7 @@ public class SoapClient {
 
     }
 
-    /*
+
     public void get(CallbackSOAP callback, RecuestSOAP recuestSOAP ) throws IOException, XmlPullParserException {
         callback.result(get(recuestSOAP));
     }
@@ -55,13 +57,13 @@ public class SoapClient {
 
         return result;
     }
-    */
+
 
     public <T> T get(Object recuest , Class<T> response ) throws IOException, XmlPullParserException {
 
         Soap soap = new Soap();
-        String soapAction = new AnnotationsUtil().getSoapActionValue(recuest);
-        int soapVersion = new AnnotationsUtil().getSoapVersion(recuest);
+        String soapAction = new AnnotationsSOAP().getSoapActionValue(recuest);
+        int soapVersion = new AnnotationsSOAP().getSoapVersion(recuest);
         if (soapVersion > 0) {
             envelope.version = soapVersion;
         }

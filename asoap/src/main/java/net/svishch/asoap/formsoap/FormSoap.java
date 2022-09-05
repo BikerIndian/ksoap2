@@ -2,7 +2,7 @@ package net.svishch.asoap.formsoap;
 
 
 import net.svishch.asoap.ParseSoapUtil;
-import net.svishch.asoap.annotations.AnnotationsUtil;
+import net.svishch.asoap.annotations.AnnotationsSOAP;
 import net.svishch.asoap.debug.SoapObjectDebug;
 import net.svishch.asoap.util.NewInstanceObject;
 import org.ksoap2.serialization.AttributeInfo;
@@ -12,7 +12,9 @@ import org.ksoap2.serialization.SoapPrimitive;
 
 import java.lang.reflect.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -79,7 +81,7 @@ public class FormSoap {
         for (Field field : fields) {
             field.setAccessible(true);
 
-            if (new AnnotationsUtil().isPrimitiveValue(field)) {
+            if (new AnnotationsSOAP().isPrimitiveValue(field)) {
 
                 try {
                     addFieldValueType(object, field, soapPrimitive.getValue());
@@ -115,12 +117,19 @@ public class FormSoap {
         for (Field field : fields) {
             field.setAccessible(true);
 
-            if (new AnnotationsUtil().isAttributeName(field, attribute.getName())) {
+            if (new AnnotationsSOAP().isAttributeName(field, attribute.getName())) {
                 try {
                     addFieldValueType(object, field, attribute.getValue());
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
+                return;
+            }
+        }
+
+        for (Field field : fields) {
+            if (AnnotationsSOAP.isAnnotationsAttributes(field)) {
+                addAttributesMap(object, field, attribute.getName(), attribute.getValue());
                 return;
             }
         }
@@ -132,6 +141,46 @@ public class FormSoap {
         sendLog(mess);
     }
 
+    private void addAttributesMap(Object object, Field field, Object name, Object value) {
+
+        if (checkAttributesType(field)) {
+
+            try {
+                Map<String, String> attributes = (Map<String, String>) field.get(object);
+
+                if (field.get(object) == null) {
+                    attributes = new HashMap<>();
+                    field.set(object, attributes);
+                }
+
+                attributes.put(name.toString(), value.toString());
+
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+
+            String mess = String.format("%n  Error: \t\tObject not found (java.util.Map<java.lang.String, java.lang.String>) %n  Class: \t\t%s%n  Attribute: \t%s%n  Name: \t\t%s (%s)%n",
+                    object.getClass().getName(),
+                    "@Attributes",
+                    field.getName(),
+                    field.getGenericType());
+
+            sendLog(mess);
+        }
+
+
+    }
+
+    private boolean checkAttributesType(Field field) {
+        if (field.getType().equals(Map.class)) {
+            Type[] generic = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
+            return generic[0].equals(String.class) && generic[1].equals(String.class);
+        }
+        return false;
+    }
+
     private <T> void setFieldValue(Object object, String nameSoap, Object value, Class<T> classOfT) throws IllegalAccessException {
 
         Field[] fields = classOfT.getDeclaredFields();
@@ -139,7 +188,7 @@ public class FormSoap {
         for (Field field : fields) {
             field.setAccessible(true);
 
-            if (new AnnotationsUtil().isSerializedName(field, nameSoap)) {
+            if (new AnnotationsSOAP().isSerializedName(field, nameSoap)) {
                 addFieldValueType(object, field, value);
                 return;
             }
@@ -183,9 +232,7 @@ public class FormSoap {
 
     private void setList(Object object, Field field, Object value) {
 
-        Type type = field.getGenericType();
-        String genericType = type.getTypeName().substring(type.getTypeName().indexOf('<') + 1, type.getTypeName().indexOf('>'));
-
+        String genericType = ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0].getTypeName();
 
         List objFiled = null;
         try {

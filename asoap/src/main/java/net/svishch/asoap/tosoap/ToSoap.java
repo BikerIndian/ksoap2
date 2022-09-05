@@ -1,6 +1,7 @@
 package net.svishch.asoap.tosoap;
 
 import net.svishch.asoap.annotations.*;
+import net.svishch.asoap.util.AnnotationsUtil;
 import net.svishch.asoap.util.NewInstanceObject;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
@@ -49,12 +50,12 @@ public class ToSoap {
         try {
             for (Field field : fields) {
                 field.setAccessible(true);
-                if (this.newInstanceObject.isAnnotation(field, SoapAction.class)
-                        || this.newInstanceObject.isAnnotation(field, SoapVersion.class)
+                if (AnnotationsUtil.isAnnotation(field, SoapAction.class)
+                        || AnnotationsUtil.isAnnotation(field, SoapVersion.class)
                 ) {
-                } else if (this.newInstanceObject.isAnnotation(field, NameSpace.class) && field.getType().equals(String.class)) {
+                } else if (AnnotationsUtil.isAnnotation(field, NameSpace.class) && field.getType().equals(String.class)) {
                     soapObject.setNamespace((String) field.get(obj));
-                } else if (this.newInstanceObject.isAnnotation(field, NameMethod.class) && field.getType().equals(String.class)) {
+                } else if (AnnotationsUtil.isAnnotation(field, NameMethod.class) && field.getType().equals(String.class)) {
                     soapObject.setName((String) field.get(obj));
                 } else {
                     addProperty(obj, field, soapObject);
@@ -71,8 +72,8 @@ public class ToSoap {
     private void addProperty(Object obj, Field field, SoapObject soapObject) {
 
         String valueName = firstUpperCase(field.getName());
-        if (this.newInstanceObject.isAnnotation(field, SerializedName.class)) {
-            valueName = new AnnotationsUtil().getSerializedNameValue(field);
+        if (AnnotationsUtil.isAnnotation(field, SerializedName.class)) {
+            valueName = new AnnotationsSOAP().getSerializedNameValue(field);
         }
         Object value = new NewInstanceObject().getValue(obj, field);
         soapObject.addProperty(valueName, value);

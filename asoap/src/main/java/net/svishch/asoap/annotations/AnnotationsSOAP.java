@@ -1,13 +1,14 @@
 package net.svishch.asoap.annotations;
 
+import net.svishch.asoap.util.AnnotationsUtil;
 import net.svishch.asoap.util.NewInstanceObject;
 
 import java.lang.reflect.Field;
 
-public class AnnotationsUtil {
+public class AnnotationsSOAP {
     private final NewInstanceObject newInstanceObject;
 
-    public AnnotationsUtil() {
+    public AnnotationsSOAP() {
         this.newInstanceObject = new NewInstanceObject();
     }
 
@@ -19,7 +20,7 @@ public class AnnotationsUtil {
             for (Field field : fields) {
                 field.setAccessible(true);
 
-                if (this.newInstanceObject.isAnnotation(field, SoapAction.class) && field.getType().equals(String.class)) {
+                if (AnnotationsUtil.isAnnotation(field, SoapAction.class) && field.getType().equals(String.class)) {
                     return (String) field.get(objIn);
                 }
             }
@@ -40,7 +41,7 @@ public class AnnotationsUtil {
             for (Field field : fields) {
                 field.setAccessible(true);
 
-                if (this.newInstanceObject.isAnnotation(field, SoapVersion.class) && field.getType().equals(int.class)) {
+                if (AnnotationsUtil.isAnnotation(field, SoapVersion.class) && field.getType().equals(int.class)) {
                     return (int) field.get(objIn);
                 }
             }
@@ -65,7 +66,7 @@ public class AnnotationsUtil {
     }
 
     public boolean isSerializedName(Field field, String value) {
-        String annotationValue = new AnnotationsUtil().getSerializedNameValue(field);
+        String annotationValue = new AnnotationsSOAP().getSerializedNameValue(field);
 
         return value.equals(annotationValue)
                 || value.equalsIgnoreCase(field.getName());
@@ -75,7 +76,7 @@ public class AnnotationsUtil {
     /* AttributeName */
     public boolean isAttributeName(Field field, String value) {
 
-        String annotationValue = new AnnotationsUtil().getAttributeNameValue(field);
+        String annotationValue = new AnnotationsSOAP().getAttributeNameValue(field);
 
         return value.equals(annotationValue)
                 || value.equalsIgnoreCase(field.getName());
@@ -95,8 +96,14 @@ public class AnnotationsUtil {
 
     /* PrimitiveValue */
     public boolean isPrimitiveValue(Field field) {
-        return this.newInstanceObject.isAnnotation(field, PrimitiveValue.class) ;
+        return AnnotationsUtil.isAnnotation(field, PrimitiveValue.class) ;
     }
+
+    /* Attributes */
+    public static boolean isAnnotationsAttributes(Field field) {
+        return AnnotationsUtil.isAnnotation(field, Attributes.class) ;
+    }
+
   /*
     public String getPrimitiveValue(Field field) {
         PrimitiveValue annotation = field.getAnnotation(PrimitiveValue.class);
