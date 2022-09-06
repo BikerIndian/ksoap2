@@ -47,6 +47,9 @@ public class SoapPrimitive extends AttributeContainer {
         this.value = value;
     }
 
+    public SoapPrimitive() {
+    }
+
     public boolean equals(Object o) {
         if (!(o instanceof SoapPrimitive)) {
             return false;
@@ -57,6 +60,7 @@ public class SoapPrimitive extends AttributeContainer {
                 && (value == null ? (p.value == null) : value.equals(p.value));
         return varsEqual && attributesAreEqual(p);
     }
+
 
     public int hashCode() {
         return name.hashCode() ^ (namespace == null ? 0 : namespace.hashCode());
@@ -78,4 +82,15 @@ public class SoapPrimitive extends AttributeContainer {
         return value;
     }
 
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
+    }
 }

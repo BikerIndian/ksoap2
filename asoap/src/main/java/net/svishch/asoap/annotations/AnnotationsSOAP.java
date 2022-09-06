@@ -1,15 +1,15 @@
 package net.svishch.asoap.annotations;
 
 import net.svishch.asoap.util.AnnotationsUtil;
-import net.svishch.asoap.util.NewInstanceObject;
+import net.svishch.asoap.util.ObjectUtil;
 
 import java.lang.reflect.Field;
 
 public class AnnotationsSOAP {
-    private final NewInstanceObject newInstanceObject;
+    private final ObjectUtil objectUtil;
 
     public AnnotationsSOAP() {
-        this.newInstanceObject = new NewInstanceObject();
+        this.objectUtil = new ObjectUtil();
     }
 
     public String getSoapActionValue(Object objIn) {
@@ -54,7 +54,7 @@ public class AnnotationsSOAP {
     }
 
     /* SerializedName */
-    public String getSerializedNameValue(Field field) {
+    public static String getSerializedNameValue(Field field) {
         SerializedName annotation = field.getAnnotation(SerializedName.class);
         String name = "";
 
@@ -66,7 +66,7 @@ public class AnnotationsSOAP {
     }
 
     public boolean isSerializedName(Field field, String value) {
-        String annotationValue = new AnnotationsSOAP().getSerializedNameValue(field);
+        String annotationValue =  getSerializedNameValue(field);
 
         return value.equals(annotationValue)
                 || value.equalsIgnoreCase(field.getName());
@@ -83,7 +83,7 @@ public class AnnotationsSOAP {
 
     }
 
-    public String getAttributeNameValue(Field field) {
+    public static String getAttributeNameValue(Field field) {
         AttributeName annotation = field.getAnnotation(AttributeName.class);
         String name = "";
 
@@ -102,6 +102,19 @@ public class AnnotationsSOAP {
     /* Attributes */
     public static boolean isAnnotationsAttributes(Field field) {
         return AnnotationsUtil.isAnnotation(field, Attributes.class) ;
+    }
+
+
+    public static boolean isPrimitive(Object obj) {
+        System.out.println("isPrim");
+        Field[] fields = obj.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            field.setAccessible(true);
+            if (AnnotationsUtil.isAnnotation(field, PrimitiveValue.class)) {
+                return true;
+            }
+        }
+        return false;
     }
 
   /*

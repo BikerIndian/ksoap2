@@ -1,16 +1,15 @@
 package net.svishch.asoap.util;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.logging.Logger;
 
-public class NewInstanceObject {
+public class ObjectUtil {
     private Logger logger;
 
-    public NewInstanceObject() {
+    public ObjectUtil() {
         initLog();
     }
 
@@ -45,7 +44,7 @@ public class NewInstanceObject {
         }
     }
 
-    public Object getValue(Object obj, Field field) {
+    public Object getValueString(Object obj, Field field) {
 
         Class<?> fieldType = field.getType();
 
@@ -56,7 +55,7 @@ public class NewInstanceObject {
                 return field.get(obj);
             }
 
-            sendLogger(String.format("No field  %s",fieldType.toString()));
+            sendLogger(LogUtil.getLogMess("This is not a string type",obj,field));
 
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -79,6 +78,18 @@ public class NewInstanceObject {
                 System.err.println(field.getType() + " != " + value.getClass().getName());
             }
         */
+    }
+
+    public Object getValueObj(Object obj, Field field) {
+
+        try {
+            return field.get(obj);
+
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+
     }
 
     private void sendLogger(String mess) {

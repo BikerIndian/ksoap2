@@ -2,22 +2,25 @@ package net.svishch.asoap.tosoap;
 
 import net.svishch.asoap.annotations.*;
 import net.svishch.asoap.util.AnnotationsUtil;
-import net.svishch.asoap.util.NewInstanceObject;
+import net.svishch.asoap.util.ObjectUtil;
 import org.ksoap2.SoapEnvelope;
+import org.ksoap2.serialization.AttributeContainer;
 import org.ksoap2.serialization.SoapObject;
+import org.ksoap2.serialization.SoapPrimitive;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class ToSoap {
 
     private final SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
-    private final NewInstanceObject newInstanceObject;
+    private final ObjectUtil objectUtil;
     private Logger logger;
 
     public ToSoap() {
-        this.newInstanceObject = new NewInstanceObject();
+        this.objectUtil = new ObjectUtil();
         initLog();
         initEnvelope();
     }
@@ -57,6 +60,8 @@ public class ToSoap {
                     soapObject.setNamespace((String) field.get(obj));
                 } else if (AnnotationsUtil.isAnnotation(field, NameMethod.class) && field.getType().equals(String.class)) {
                     soapObject.setName((String) field.get(obj));
+                } else if (AnnotationsUtil.isAnnotation(field, AttributeName.class) || AnnotationsUtil.isAnnotation(field, Attributes.class)) {
+                    addAttribute(obj, field, soapObject);
                 } else {
                     addProperty(obj, field, soapObject);
                 }
@@ -69,14 +74,84 @@ public class ToSoap {
         return soapObject;
     }
 
+    private Object getPrimitiveValue(Object obj) {
+        Field[] fields = obj.getClass().getDeclaredFields();
+        SoapPrimitive result = new SoapPrimitive();
+
+        for (Field field : fields) {
+            field.setAccessible(true);
+            if (AnnotationsUtil.isAnnotation(field, AttributeName.class) || AnnotationsUtil.isAnnotation(field, Attributes.class)) {
+                addAttribute(obj, field, result);
+            }
+
+            if (AnnotationsUtil.isAnnotation(field, PrimitiveValue.class)) {
+                try {
+                    result.setValue(field.get(obj));
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private void addAttribute(Object obj, Field field, AttributeContainer soapObject) {
+        try {
+
+            if (AnnotationsUtil.isAnnotation(field, AttributeName.class)) {
+                String name = AnnotationsSOAP.getAttributeNameValue(field);
+                Object value = field.get(obj);
+                soapObject.addAttribute(name, value);
+            }
+
+            if (AnnotationsUtil.isAnnotation(field, Attributes.class)) {
+                // TODO Attributes MAP
+            }
+
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void addProperty(Object obj, Field field, SoapObject soapObject) {
 
         String valueName = firstUpperCase(field.getName());
         if (AnnotationsUtil.isAnnotation(field, SerializedName.class)) {
-            valueName = new AnnotationsSOAP().getSerializedNameValue(field);
+            valueName = AnnotationsSOAP.getSerializedNameValue(field);
         }
-        Object value = new NewInstanceObject().getValue(obj, field);
-        soapObject.addProperty(valueName, value);
+
+        if (field.getType().isPrimitive() || field.getType().equals(String.class)) {
+            Object value = new ObjectUtil().getValueString(obj, field);
+            soapObject.addProperty(valueName, value);
+        } else if (field.getType().equals(List.class)) {
+            addList(valueName, obj, field, soapObject);
+        } else {
+            Object value = new ObjectUtil().getValueObj(obj, field);
+            soapObject.addProperty(valueName, getSoapObject(value));
+        }
+
+    }
+
+    private void addList(String valueName, Object objIn, Field field, SoapObject soapObject) {
+
+        try {
+            List list = (List) field.get(objIn);
+            if (list == null) {
+                return;
+            }
+
+            for (Object obj : list) {
+                if (AnnotationsSOAP.isPrimitive(obj)) {
+                    soapObject.addProperty(valueName, getPrimitiveValue(obj));
+                } else {
+                    soapObject.addProperty(valueName, getSoapObject(obj));
+                }
+            }
+
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     // First letter to uppercase

@@ -4,7 +4,7 @@ package net.svishch.asoap.formsoap;
 import net.svishch.asoap.ParseSoapUtil;
 import net.svishch.asoap.annotations.AnnotationsSOAP;
 import net.svishch.asoap.debug.SoapObjectDebug;
-import net.svishch.asoap.util.NewInstanceObject;
+import net.svishch.asoap.util.ObjectUtil;
 import org.ksoap2.serialization.AttributeInfo;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
@@ -21,17 +21,17 @@ import java.util.logging.Logger;
 public class FormSoap {
 
     private Logger logger;
-    private NewInstanceObject newInstanceObject;
+    private ObjectUtil objectUtil;
 
     public FormSoap() {
         this.logger = Logger.getLogger(FormSoap.class.getName());
         this.logger.setLevel(Level.INFO);
-        this.newInstanceObject = new NewInstanceObject();
+        this.objectUtil = new ObjectUtil();
     }
 
     public <T> T formSoap(SoapObject soap, Class<T> classOfT) {
 
-        T object = this.newInstanceObject.create(classOfT);
+        T object = this.objectUtil.create(classOfT);
 
         if (soap == null) {
             return object;
@@ -57,7 +57,7 @@ public class FormSoap {
     }
 
     public <T> T formSoap(SoapPrimitive soapPrimitive, Class<T> classOfT) {
-        T object = this.newInstanceObject.create(classOfT);
+        T object = this.objectUtil.create(classOfT);
 
         if (soapPrimitive == null) {
             return object;
