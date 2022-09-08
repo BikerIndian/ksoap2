@@ -106,7 +106,6 @@ public class AnnotationsSOAP {
 
 
     public static boolean isPrimitive(Object obj) {
-        System.out.println("isPrim");
         Field[] fields = obj.getClass().getDeclaredFields();
         for (Field field : fields) {
             field.setAccessible(true);

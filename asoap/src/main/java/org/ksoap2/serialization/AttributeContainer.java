@@ -1,8 +1,10 @@
 package org.ksoap2.serialization;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
-public class AttributeContainer implements HasAttributes{
+public class AttributeContainer implements HasAttributes {
     protected Vector attributes = new Vector();
 
     /**
@@ -28,7 +30,11 @@ public class AttributeContainer implements HasAttributes{
         return ((AttributeInfo) attributes.elementAt(index)).getValue();
     }
 
-     /**
+    public List getAttributes() {
+        return new ArrayList<AttributeInfo>(attributes);
+    }
+
+    /**
      * Get the attribute's toString value.
      */
     public String getAttributeAsString(int index) {
@@ -55,8 +61,8 @@ public class AttributeContainer implements HasAttributes{
      *
      * @throws RuntimeException if the attribute does not exist
      */
-    public Object getAttribute(String namespace,String name) {
-        Integer i = attributeIndex(namespace,name);
+    public Object getAttribute(String namespace, String name) {
+        Integer i = attributeIndex(namespace, name);
         if (i != null) {
             return getAttribute(i.intValue());
         } else {
@@ -83,14 +89,15 @@ public class AttributeContainer implements HasAttributes{
      *
      * @throws RuntimeException if the attribute does not exist
      */
-    public String getAttributeAsString(String namespace,String name) {
-        Integer i = attributeIndex(namespace,name);
+    public String getAttributeAsString(String namespace, String name) {
+        Integer i = attributeIndex(namespace, name);
         if (i != null) {
             return getAttribute(i.intValue()).toString();
         } else {
             throw new RuntimeException("illegal property: " + name);
         }
     }
+
     /**
      * Knows whether the given attribute exists
      */
@@ -105,13 +112,14 @@ public class AttributeContainer implements HasAttributes{
     /**
      * Knows whether the given attribute exists
      */
-    public boolean hasAttribute(final String namespace,final String name) {
-        if (attributeIndex(namespace,name) != null) {
+    public boolean hasAttribute(final String namespace, final String name) {
+        if (attributeIndex(namespace, name) != null) {
             return true;
         } else {
             return false;
         }
     }
+
     /**
      * Get an attribute without chance of throwing an exception
      *
@@ -133,8 +141,8 @@ public class AttributeContainer implements HasAttributes{
      * @param name the name of the attribute to retrieve
      * @return the value of the attribute if it exists; {@code null} if it does not exist
      */
-    public Object getAttributeSafely(String namespace,String name) {
-        Integer i = attributeIndex(namespace,name);
+    public Object getAttributeSafely(String namespace, String name) {
+        Integer i = attributeIndex(namespace, name);
         if (i != null) {
             return getAttribute(i.intValue());
         } else {
@@ -145,7 +153,7 @@ public class AttributeContainer implements HasAttributes{
     /**
      * Get an attributes' toString value without chance of throwing an
      * exception.
-
+     *
      * @param name
      * @return the value of the attribute,s toString method if it exists; ""
      * if it does not exist
@@ -162,13 +170,13 @@ public class AttributeContainer implements HasAttributes{
     /**
      * Get an attributes' toString value without chance of throwing an
      * exception.
-
+     *
      * @param name
      * @return the value of the attribute,s toString method if it exists; ""
      * if it does not exist
      */
-    public Object getAttributeSafelyAsString(String namespace,String name) {
-        Integer i = attributeIndex(namespace,name);
+    public Object getAttributeSafelyAsString(String namespace, String name) {
+        Integer i = attributeIndex(namespace, name);
         if (i != null) {
             return getAttribute(i.intValue()).toString();
         } else {
@@ -185,9 +193,9 @@ public class AttributeContainer implements HasAttributes{
         return null;
     }
 
-    private Integer attributeIndex(String namespace,String name) {
+    private Integer attributeIndex(String namespace, String name) {
         for (int i = 0; i < attributes.size(); i++) {
-            AttributeInfo attrInfo=(AttributeInfo) attributes.elementAt(i);
+            AttributeInfo attrInfo = (AttributeInfo) attributes.elementAt(i);
             if (name.equals(attrInfo.getName()) && namespace.equals(attrInfo.getNamespace())) {
                 return new Integer(i);
             }
@@ -238,18 +246,18 @@ public class AttributeContainer implements HasAttributes{
      * @return {@code this} object.
      */
     public void addAttribute(String name, Object value) {
-        addAttribute(null,name,value);
+        addAttribute(null, name, value);
     }
 
     /**
      * Adds a attribute (parameter) to the object.
      *
-     * @param namespace  The namespace of the attribute
-     * @param name  The name of the attribute
-     * @param value the value of the attribute
+     * @param namespace The namespace of the attribute
+     * @param name      The name of the attribute
+     * @param value     the value of the attribute
      * @return {@code this} object.
      */
-    public void addAttribute(String namespace,String name, Object value) {
+    public void addAttribute(String namespace, String name, Object value) {
         AttributeInfo attributeInfo = new AttributeInfo();
         attributeInfo.name = name;
         attributeInfo.namespace = namespace;
@@ -257,8 +265,10 @@ public class AttributeContainer implements HasAttributes{
         attributeInfo.value = value;
         addAttribute(attributeInfo);
     }
+
     /**
      * Add an attribute if the value is not null.
+     *
      * @param name
      * @param value
      */
@@ -270,13 +280,14 @@ public class AttributeContainer implements HasAttributes{
 
     /**
      * Add an attribute if the value is not null.
-     * @param namespace  The namespace of the attribute
+     *
+     * @param namespace The namespace of the attribute
      * @param name
      * @param value
      */
-    public void addAttributeIfValue(String namespace,String name, Object value) {
+    public void addAttributeIfValue(String namespace, String name, Object value) {
         if (value != null) {
-            addAttribute(namespace,name, value);
+            addAttribute(namespace, name, value);
         }
     }
 
@@ -293,6 +304,7 @@ public class AttributeContainer implements HasAttributes{
 
     /**
      * Add an attributeInfo if its value is not null.
+     *
      * @param attributeInfo
      */
     public void addAttributeIfValue(AttributeInfo attributeInfo) {

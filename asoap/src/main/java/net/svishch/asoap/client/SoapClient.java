@@ -18,7 +18,7 @@ public class SoapClient {
 
 
     private ClientSettings urlSettings;
-    private SoapSerializationEnvelope envelope   = new SoapSerializationEnvelope(SoapEnvelope.VER12);
+    private SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
     private OkHttpClient clientTransport;
     private Logger logger;
 
@@ -38,18 +38,17 @@ public class SoapClient {
         envelope.implicitTypes = true;
         envelope.setAddAdornments(false);
 
-        //Headers headers = Headers.of("Authorization", getPass());
-        //httpClient.getSoap(url,soapAction,callbackString);
         clientTransport = new OkHttpClient(urlSettings);
 
     }
 
-
-    public void get(CallbackSOAP callback, RecuestSOAP recuestSOAP ) throws IOException, XmlPullParserException {
+    @Deprecated
+    public void get(CallbackSOAP callback, RecuestSOAP recuestSOAP) throws IOException, XmlPullParserException {
         callback.result(get(recuestSOAP));
     }
 
-    public SoapObject get( RecuestSOAP recuestSOAP ) throws IOException, XmlPullParserException {
+    @Deprecated
+    public SoapObject get(RecuestSOAP recuestSOAP) throws IOException, XmlPullParserException {
 
         envelope.setOutputSoapObject(recuestSOAP.getSoapObject());
         clientTransport.call(recuestSOAP.getSoapAction(), envelope);
@@ -58,22 +57,31 @@ public class SoapClient {
         return result;
     }
 
+    /*
+    send Object
+    return SoapObject
+    */
+    public SoapObject getSoapObj(Object recuest) throws IOException, XmlPullParserException {
 
-    public <T> T get(Object recuest , Class<T> response ) throws IOException, XmlPullParserException {
-
-        Soap soap = new Soap();
         String soapAction = new AnnotationsSOAP().getSoapActionValue(recuest);
         int soapVersion = new AnnotationsSOAP().getSoapVersion(recuest);
         if (soapVersion > 0) {
             envelope.version = soapVersion;
         }
+        Soap soap = new Soap();
         envelope.setOutputSoapObject(soap.toSoapObject(recuest));
         clientTransport.call(soapAction, envelope);
         SoapObject result = (SoapObject) envelope.getResponse();
-        return soap.formSoap(result,response);
-
+        return result;
     }
 
+    public <T> T get(Object recuest, Class<T> response) throws IOException, XmlPullParserException {
+        Soap soap = new Soap();
+        SoapObject result = getSoapObj(recuest);
+
+        return soap.formSoap(result, response);
+
+    }
 
 
     private void sendLogger(String mess) {

@@ -20,6 +20,7 @@ public class ClientSettings {
 
 
     protected HttpUrl url;
+    protected int port;
     protected Proxy proxy = null;
     protected int timeout = 20000;
     protected String userAgent = null;
@@ -44,6 +45,15 @@ public class ClientSettings {
 
     public ClientSettings(String url) {
         this.url = HttpUrl.parse(url);
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public ClientSettings setPort(int port) {
+        this.port = port;
+        return this;
     }
 
     public ClientSettings client(okhttp3.OkHttpClient client) {
