@@ -30,7 +30,7 @@ public class AttributeContainer implements HasAttributes {
         return ((AttributeInfo) attributes.elementAt(index)).getValue();
     }
 
-    public List getAttributes() {
+    public List<AttributeInfo> getAttributes() {
         return new ArrayList<AttributeInfo>(attributes);
     }
 

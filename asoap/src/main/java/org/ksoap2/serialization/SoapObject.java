@@ -156,6 +156,10 @@ public class SoapObject extends AttributeContainer implements KvmSerializable, H
         }
     }
 
+    public List getPropertys(){
+        return new ArrayList(this.properties);
+    }
+
     /**
      * Get the toString value of the property.
      *

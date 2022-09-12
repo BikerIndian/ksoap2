@@ -7,19 +7,21 @@ import java.io.IOException;
 public class HttpResponseException extends IOException {
     private int statusCode;
     private Headers responseHeaders;
+    private String body = "";
 
     HttpResponseException(int statusCode) {
         this((String)null, statusCode);
     }
 
     public HttpResponseException(String message, int statusCode) {
-        this(message, statusCode, (Headers)null);
+        this(message, statusCode, (Headers)null,"");
     }
 
-    public HttpResponseException(String message, int statusCode, Headers responseHeaders) {
+    public HttpResponseException(String message, int statusCode, Headers responseHeaders, String responseBody) {
         super(message);
         this.statusCode = statusCode;
         this.responseHeaders = responseHeaders;
+        this.body = responseBody;
     }
 
     public int getStatusCode() {
@@ -28,5 +30,9 @@ public class HttpResponseException extends IOException {
 
     public Headers getResponseHeaders() {
         return this.responseHeaders;
+    }
+
+    public String getBody() {
+        return body;
     }
 }

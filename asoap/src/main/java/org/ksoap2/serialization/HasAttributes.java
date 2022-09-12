@@ -1,5 +1,7 @@
 package org.ksoap2.serialization;
 
+import java.util.List;
+
 /**
  * Common inteface for classes which want to serialize attributes to outgoing soap message
  *
@@ -13,4 +15,6 @@ public interface HasAttributes {
     void getAttribute(int index, AttributeInfo info);
 
     void setAttribute(AttributeInfo info);
+
+    List getAttributes();
 }

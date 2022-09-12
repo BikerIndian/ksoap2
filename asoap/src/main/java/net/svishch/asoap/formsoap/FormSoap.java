@@ -56,6 +56,28 @@ public class FormSoap {
         return object;
     }
 
+    /*
+     *  in PropertyInfo
+     *  out Object
+     * */
+
+    public <T> T formPropertyInfo(PropertyInfo propertyInfo, Class<T> classOfT) {
+
+        T object = this.objectUtil.create(classOfT);
+
+        if (propertyInfo == null) {
+            return object;
+        }
+
+        Object value = propertyInfo.getValue();
+        try {
+            setFieldValue(object, propertyInfo.name, value, classOfT);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return object;
+    }
+
     public <T> T formSoap(SoapPrimitive soapPrimitive, Class<T> classOfT) {
         T object = this.objectUtil.create(classOfT);
 

@@ -26,8 +26,7 @@ public class OkHttpClient {
     private Logger logger;
     private boolean debug = false;
 
-    protected OkHttpClient(ClientSettings clientSettings)
-    {
+    protected OkHttpClient(ClientSettings clientSettings) {
 
         this.clientSettings = clientSettings;
         this.debug = clientSettings.debug;
@@ -90,7 +89,7 @@ public class OkHttpClient {
     }
 
     public Headers call(String soapAction, SoapEnvelope envelope) throws IOException, XmlPullParserException {
-        return this.call(soapAction, envelope, (Headers)null);
+        return this.call(soapAction, envelope, (Headers) null);
     }
 
     public Headers call(String soapAction, SoapEnvelope envelope, Headers headers) throws IOException, XmlPullParserException {
@@ -113,7 +112,7 @@ public class OkHttpClient {
         sendLoggerFinest("Request Payload: " + new String(requestData, "UTF-8"));
 
 
-        RequestBody body = RequestBody.create(requestData,mediaType);
+        RequestBody body = RequestBody.create(requestData, mediaType);
         okhttp3.Request.Builder builder = (
                 new okhttp3.Request.Builder())
                 .url(this.url)
@@ -124,12 +123,12 @@ public class OkHttpClient {
         /* BASIC */
         if (ClientSettings.AUTH_BASIC == this.clientSettings.authType) {
             String authorization = Credentials.basic(this.clientSettings.user, this.clientSettings.password);
-            builder.addHeader("Authorization",authorization);
+            builder.addHeader("Authorization", authorization);
         }
 
 
         builder.addHeader("User-Agent", this.userAgent);
-        builder.addHeader("ContentType",mediaType.toString());
+        builder.addHeader("ContentType", mediaType.toString());
         builder.addHeader("Content-Length", String.valueOf(contentLength));
 
 
@@ -142,13 +141,13 @@ public class OkHttpClient {
 
         int i;
         if (null != this.headers) {
-            for(i = 0; i < this.headers.size(); ++i) {
+            for (i = 0; i < this.headers.size(); ++i) {
                 builder.addHeader(this.headers.name(i), this.headers.value(i));
             }
         }
 
         if (null != headers) {
-            for(i = 0; i < headers.size(); ++i) {
+            for (i = 0; i < headers.size(); ++i) {
                 builder.addHeader(headers.name(i), headers.value(i));
             }
         }
@@ -169,12 +168,13 @@ public class OkHttpClient {
                 throw new HttpResponseException("Null response body.", response.code());
             }
 
+            String responseBodyStr = response.peekBody(32768L).string();
             Headers responseHeaders = response.headers();
             sendLogger("Response Headers: " + responseHeaders.toString());
-            sendLoggerFinest("Response Payload (max first 32KB): " + response.peekBody(32768L).string());
+            sendLoggerFinest("Response Payload (max first 32KB): " + responseBodyStr);
 
             if (!response.isSuccessful()) {
-                throw new HttpResponseException("HTTP request failed, HTTP status: " + response.code(), response.code(), responseHeaders);
+                throw new HttpResponseException("HTTP request failed, HTTP status: " + response.code(), response.code(), responseHeaders, responseBodyStr);
             }
 
             envelope.parse(responseBody.byteStream());
@@ -197,7 +197,6 @@ public class OkHttpClient {
 
         return var12;
     }
-
 
 
     private void sendLogger(String mess) {
