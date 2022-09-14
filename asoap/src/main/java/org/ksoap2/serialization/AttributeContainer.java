@@ -101,7 +101,7 @@ public class AttributeContainer implements HasAttributes {
     /**
      * Knows whether the given attribute exists
      */
-    public boolean hasAttribute(final String name) {
+    public boolean isAttribute(final String name) {
         if (attributeIndex(name) != null) {
             return true;
         } else {
@@ -112,7 +112,7 @@ public class AttributeContainer implements HasAttributes {
     /**
      * Knows whether the given attribute exists
      */
-    public boolean hasAttribute(final String namespace, final String name) {
+    public boolean isAttribute(final String namespace, final String name) {
         if (attributeIndex(namespace, name) != null) {
             return true;
         } else {
@@ -227,7 +227,7 @@ public class AttributeContainer implements HasAttributes {
         for (int attribIndex = 0; attribIndex < numAttributes; attribIndex++) {
             AttributeInfo thisAttrib = (AttributeInfo) this.attributes.elementAt(attribIndex);
             Object thisAttribValue = thisAttrib.getValue();
-            if (!other.hasAttribute(thisAttrib.getName())) {
+            if (!other.isAttribute(thisAttrib.getName())) {
                 return false;
             }
             Object otherAttribValue = other.getAttributeSafely(thisAttrib.getName());
