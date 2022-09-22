@@ -1,6 +1,5 @@
 package net.svishch.asoap.formsoap;
 
-
 import net.svishch.asoap.ParseSoapUtil;
 import net.svishch.asoap.annotations.AnnotationsSOAP;
 import net.svishch.asoap.debug.SoapObjectDebug;
@@ -126,11 +125,20 @@ public class FormSoap {
     public <T> T formSoap(String soap, Class<T> classOfT) {
 
         SoapObject soapObject = new FormStringSoap().getSoapObject(soap);
-        System.out.println(soap);
         new SoapObjectDebug().printSoapObject(soapObject);
 
         return formSoap(soapObject, classOfT);
 
+    }
+
+    public boolean isSoap(String soap){
+        try {
+            new FormStringSoap().getSoapObject(soap);
+            return true;
+
+        }catch (Exception e){
+            return false;
+        }
     }
 
     private <T> void setFieldAttribute(T object, AttributeInfo attribute, Class<T> classOfT) {
