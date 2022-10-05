@@ -7,6 +7,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -122,7 +123,7 @@ public class OkHttpClient {
 
         /* BASIC */
         if (ClientSettings.AUTH_BASIC == this.clientSettings.authType) {
-            String authorization = Credentials.basic(this.clientSettings.user, this.clientSettings.password);
+            String authorization = "Basic " + Base64.getEncoder().encodeToString((this.clientSettings.user + ":" + this.clientSettings.password).getBytes());
             builder.addHeader("Authorization", authorization);
         }
 

@@ -29,9 +29,11 @@ public class SoapObjectDebug {
 
 
         String strInfo = String.format(
-                "%s --------- " +
-                "SoapObject {name = %s} " +
-                "{property=%d} --------------",prefix,soapObject.getName(),soapObject.getPropertyCount());
+                "%s --------- SoapObject {name = %s} {attribute=%d} {property=%d} --------------"
+                ,prefix
+                ,soapObject.getName()
+                ,soapObject.getAttributeCount()
+                ,soapObject.getPropertyCount());
 
         println(strInfo);
        

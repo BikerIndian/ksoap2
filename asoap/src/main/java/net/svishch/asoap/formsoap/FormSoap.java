@@ -4,11 +4,10 @@ import net.svishch.asoap.ParseSoapUtil;
 import net.svishch.asoap.annotations.AnnotationsSOAP;
 import net.svishch.asoap.debug.SoapObjectDebug;
 import net.svishch.asoap.util.ObjectUtil;
-import org.ksoap2.serialization.AttributeInfo;
-import org.ksoap2.serialization.PropertyInfo;
-import org.ksoap2.serialization.SoapObject;
-import org.ksoap2.serialization.SoapPrimitive;
+import org.ksoap2.serialization.*;
+import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.IOException;
 import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,12 +19,21 @@ import java.util.logging.Logger;
 public class FormSoap {
 
     private Logger logger;
-    private ObjectUtil objectUtil;
+    private ObjectUtil objectUtil = new ObjectUtil();
+    private boolean debug = false;
 
     public FormSoap() {
-        this.logger = Logger.getLogger(FormSoap.class.getName());
-        this.logger.setLevel(Level.INFO);
-        this.objectUtil = new ObjectUtil();
+        setInit();
+    }
+
+    public FormSoap(boolean debug) {
+        setInit();
+        this.debug = debug;
+    }
+
+    private void setInit() {
+       this.logger = Logger.getLogger(FormSoap.class.getName());
+       this.logger.setLevel(Level.INFO);
     }
 
     public <T> T formSoap(SoapObject soap, Class<T> classOfT) {
@@ -122,12 +130,47 @@ public class FormSoap {
 
     }
 
-    public <T> T formSoap(String soap, Class<T> classOfT) {
+    public <T> T formSoap(String soap, Class<T> classOfT) throws XmlPullParserException, IOException {
+
+        SoapObject soapObject = new FormStringSoap().getSoapObject(soap);
+        if (this.debug) {
+            new SoapObjectDebug().printSoapObject(soapObject);
+        }
+
+        if (soapObject == null) {
+            sendLog("Error: No to SOAP");
+        }
+        return formSoap(soapObject, classOfT);
+
+    }
+
+    public <T> T formSoap(String soap, Class<T> classOfT,SoapSerializationEnvelope envelope) throws XmlPullParserException, IOException {
+
+        SoapObject soapObject = new FormStringSoap().getSoapObject(soap,envelope);
+        if (this.debug) {
+            new SoapObjectDebug().printSoapObject(soapObject);
+        }
+
+        if (soapObject == null) {
+            sendLog("Error: No to SOAP");
+        }
+        return formSoap(soapObject, classOfT);
+
+    }
+
+    public SoapObject formSoap(String soap) throws XmlPullParserException, IOException {
 
         SoapObject soapObject = new FormStringSoap().getSoapObject(soap);
         new SoapObjectDebug().printSoapObject(soapObject);
+        return soapObject;
 
-        return formSoap(soapObject, classOfT);
+    }
+
+    public SoapObject formSoap(String soap,SoapSerializationEnvelope envelope) throws XmlPullParserException, IOException {
+
+        SoapObject soapObject = new FormStringSoap().getSoapObject(soap,envelope);
+        new SoapObjectDebug().printSoapObject(soapObject);
+        return soapObject;
 
     }
 
@@ -140,6 +183,17 @@ public class FormSoap {
             return false;
         }
     }
+
+    public boolean isSoap(String soap, SoapSerializationEnvelope envelope){
+        try {
+            new FormStringSoap().getSoapObject(soap,envelope);
+            return true;
+
+        }catch (Exception e){
+            return false;
+        }
+    }
+
 
     private <T> void setFieldAttribute(T object, AttributeInfo attribute, Class<T> classOfT) {
 
@@ -296,6 +350,8 @@ public class FormSoap {
     }
 
     private void sendLog(String mess) {
-        this.logger.info(mess);
+        if (debug){
+            this.logger.info(mess);
+        }
     }
 }

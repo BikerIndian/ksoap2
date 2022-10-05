@@ -24,16 +24,16 @@ public class FormStringSoap {
         envelope.setAddAdornments(false);
     }
 
-    SoapObject getSoapObject(String soap) {
+    SoapObject getSoapObject(String soap) throws XmlPullParserException, IOException {
         InputStream stream = new ByteArrayInputStream(soap.getBytes(StandardCharsets.UTF_8));
-        try {
             envelope.parse(stream);
-        } catch (XmlPullParserException | IOException e) {
-            e.printStackTrace();
-        }
-        return new SoapObject();
+            return (SoapObject) envelope.getResponse();
     }
 
+    SoapObject getSoapObject(String soap, SoapSerializationEnvelope envelope) throws XmlPullParserException, IOException {
+        this.envelope = envelope;
+        return getSoapObject(soap);
+    }
 
 
 }
