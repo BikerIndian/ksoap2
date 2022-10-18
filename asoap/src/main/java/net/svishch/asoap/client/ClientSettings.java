@@ -20,7 +20,7 @@ public class ClientSettings {
 
 
     protected HttpUrl url;
-    protected int port;
+    protected int port = 80;
     protected Proxy proxy = null;
     protected int timeout = 20000;
     protected String userAgent = null;

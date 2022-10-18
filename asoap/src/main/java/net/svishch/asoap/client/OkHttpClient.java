@@ -71,6 +71,22 @@ public class OkHttpClient {
         this.userAgent = this.buildUserAgent(clientSettings);
         this.url = clientSettings.url;
         this.headers = clientSettings.headers;
+
+        printClientSettings();
+    }
+
+    private void printClientSettings() {
+
+        String lanSetting = String.format("%n%n" +
+                        "%n  ***** LAN SETTINGS *****" +
+                        "%n  URL: %s" +
+                        "%n  PORT: %d" +
+                        "%n  TIMEOUT: %d" +
+                        "%n",
+                clientSettings.url.toString(),
+                clientSettings.port,
+                clientSettings.timeout);
+        sendLogger(lanSetting);
     }
 
     private String buildUserAgent(ClientSettings clientSettings) {
@@ -110,7 +126,7 @@ public class OkHttpClient {
         byte[] requestData = envelope.getRequestData();
         int contentLength = requestData.length;
 
-        sendLoggerFinest("Request Payload: " + new String(requestData, "UTF-8"));
+//        sendLogger("Request Payload: " + new String(requestData, "UTF-8"));
 
 
         RequestBody body = RequestBody.create(requestData, mediaType);
@@ -132,13 +148,9 @@ public class OkHttpClient {
         builder.addHeader("ContentType", mediaType.toString());
         builder.addHeader("Content-Length", String.valueOf(contentLength));
 
-
         if (envelope.version != 120) {
             builder.addHeader("SOAPAction", soapAction);
         }
-
-        sendLogger("SoapAction: " + soapAction);
-        sendLogger("ContentType: " + contentType);
 
         int i;
         if (null != this.headers) {
@@ -154,7 +166,6 @@ public class OkHttpClient {
         }
 
         Request request = builder.build();
-        sendLogger("Request Headers: " + request.headers().toString());
         Response response = this.client.newCall(request).execute();
         ResponseBody responseBody = null;
 
@@ -171,8 +182,6 @@ public class OkHttpClient {
 
             String responseBodyStr = response.peekBody(32768L).string();
             Headers responseHeaders = response.headers();
-            sendLogger("Response Headers: " + responseHeaders.toString());
-            sendLoggerFinest("Response Payload (max first 32KB): " + responseBodyStr);
 
             if (!response.isSuccessful()) {
                 throw new HttpResponseException("HTTP request failed, HTTP status: " + response.code(), response.code(), responseHeaders, responseBodyStr);
@@ -202,16 +211,17 @@ public class OkHttpClient {
 
     private void sendLogger(String mess) {
         if (this.debug) {
-            this.logger.fine(mess);
+            this.logger.info(mess);
         }
     }
-
+/*
     private void sendLoggerFinest(String mess) {
         if (this.debug && this.logger.getLevel().intValue() <= Level.FINEST.intValue()) {
             this.logger.finest(mess);
         }
     }
 
+ */
 
     private void setDebug() {
 
