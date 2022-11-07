@@ -117,7 +117,7 @@ public class OkHttpClient {
 
         String contentType = "text/xml;charset=utf-8";
 
-        if (envelope.version == 120) {
+        if (envelope.version == SoapEnvelope.VER12) {
             contentType = "application/soap+xml;charset=utf-8";
         }
 
@@ -148,7 +148,7 @@ public class OkHttpClient {
         builder.addHeader("ContentType", mediaType.toString());
         builder.addHeader("Content-Length", String.valueOf(contentLength));
 
-        if (envelope.version != 120) {
+        if (envelope.version != SoapEnvelope.VER12) {
             builder.addHeader("SOAPAction", soapAction);
         }
 
@@ -201,6 +201,7 @@ public class OkHttpClient {
         } finally {
             if (null != responseBody) {
                 responseBody.close();
+                response.close();
             }
 
         }

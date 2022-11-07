@@ -58,7 +58,7 @@ public class ParseSoapUtil {
 
         String valueStr = value.toString().toLowerCase(Locale.ROOT);
 
-        if (valueStr.equals("true") || valueStr.equals("false")) {
+        if (valueStr.equals("true")) {
             return true;
         }
         return false;

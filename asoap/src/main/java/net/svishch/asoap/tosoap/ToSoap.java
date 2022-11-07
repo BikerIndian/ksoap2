@@ -46,7 +46,6 @@ public class ToSoap {
 
 
     public SoapObject getSoapObject(Object obj) {
-
         Field[] fields = obj.getClass().getDeclaredFields();
         SoapObject soapObject = new SoapObject();
 
@@ -128,7 +127,12 @@ public class ToSoap {
             addList(valueName, obj, field, soapObject);
         } else {
             Object value = new ObjectUtil().getValueObj(obj, field);
-            soapObject.addProperty(valueName, getSoapObject(value));
+            if (value == null) {
+                soapObject.addProperty(valueName, null);
+            }else {
+                soapObject.addProperty(valueName, getSoapObject(value));
+            }
+
         }
 
     }

@@ -318,12 +318,11 @@ public class FormSoap {
 
         String genericType = ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0].getTypeName();
 
-        List objFiled = null;
         try {
-            objFiled = (List) field.get(object);
+            List objFiled = (List) field.get(object);
             if (objFiled == null) {
-                objFiled = new ArrayList();
-                field.set(object, objFiled);
+                field.set(object, null);
+                return;
             }
 
 
