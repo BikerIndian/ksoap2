@@ -185,4 +185,56 @@ public class ClientSettings {
         this.url = HttpUrl.parse(urlIn);
         return this;
     }
+
+    public HttpUrl getUrl() {
+        return url;
+    }
+
+    public Proxy getProxy() {
+        return proxy;
+    }
+
+    public int getTimeout() {
+        return timeout;
+    }
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    public Headers getHeaders() {
+        return headers;
+    }
+
+    public okhttp3.OkHttpClient getClient() {
+        return client;
+    }
+
+    public SSLSocketFactory getSslSocketFactory() {
+        return sslSocketFactory;
+    }
+
+    public X509TrustManager getTrustManager() {
+        return trustManager;
+    }
+
+    public Authenticator getAuthenticator() {
+        return authenticator;
+    }
+
+    public Authenticator getProxyAuthenticator() {
+        return proxyAuthenticator;
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public int getAuthType() {
+        return authType;
+    }
 }

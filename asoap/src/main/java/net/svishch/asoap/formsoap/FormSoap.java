@@ -333,7 +333,9 @@ public class FormSoap {
 
             if (value instanceof SoapObject) {
                 SoapObject soapObject = (SoapObject) value;
-                objFiled.add(this.formSoap(soapObject, Class.forName(genericType)));
+                if (0 < soapObject.getAttributeCount() || 0 < soapObject.getPropertyCount()) {
+                    objFiled.add(this.formSoap(soapObject, Class.forName(genericType)));
+                }
             }
         } catch (IllegalAccessException | ClassNotFoundException e) {
             e.printStackTrace();
